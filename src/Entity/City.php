@@ -27,9 +27,16 @@ class City
     #[ORM\OneToMany(targetEntity: Employee::class, mappedBy: 'city')]
     private Collection $employees;
 
+    /**
+     * @var Collection<int, Customer>
+     */
+    #[ORM\OneToMany(targetEntity: Customer::class, mappedBy: 'City')]
+    private Collection $customers;
+
     public function __construct()
     {
         $this->employees = new ArrayCollection();
+        $this->customers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -85,6 +92,36 @@ class City
             // set the owning side to null (unless already changed)
             if ($employee->getCity() === $this) {
                 $employee->setCity(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Customer>
+     */
+    public function getCustomers(): Collection
+    {
+        return $this->customers;
+    }
+
+    public function addCustomer(Customer $customer): static
+    {
+        if (!$this->customers->contains($customer)) {
+            $this->customers->add($customer);
+            $customer->setCity($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCustomer(Customer $customer): static
+    {
+        if ($this->customers->removeElement($customer)) {
+            // set the owning side to null (unless already changed)
+            if ($customer->getCity() === $this) {
+                $customer->setCity(null);
             }
         }
 

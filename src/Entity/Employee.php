@@ -3,16 +3,16 @@
 namespace App\Entity;
 
 use App\Repository\EmployeeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity(repositoryClass: EmployeeRepository::class)]
-class Employee
+#[ApiResource]
+class Employee extends User
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $datebirth = null;
@@ -38,9 +38,15 @@ class Employee
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $creation_date = null;
 
-    public function getId(): ?int
+    /**
+     * @var Collection<int, OrderLine>
+     */
+    #[ORM\OneToMany(targetEntity: OrderLine::class, mappedBy: 'employee')]
+    private Collection $orderLines;
+
+    public function __construct()
     {
-        return $this->id;
+        $this->orderLines = new ArrayCollection();
     }
 
     public function getDatebirth(): ?\DateTimeInterface
@@ -126,4 +132,36 @@ class Employee
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, OrderLine>
+     */
+    public function getOrderLines(): Collection
+    {
+        return $this->orderLines;
+    }
+
+    public function addOrderLine(OrderLine $orderLine): static
+    {
+        if (!$this->orderLines->contains($orderLine)) {
+            $this->orderLines->add($orderLine);
+            $orderLine->setEmployee($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrderLine(OrderLine $orderLine): static
+    {
+        if ($this->orderLines->removeElement($orderLine)) {
+            // set the owning side to null (unless already changed)
+            if ($orderLine->getEmployee() === $this) {
+                $orderLine->setEmployee(null);
+            }
+        }
+
+        return $this;
+    }
+
+
 }

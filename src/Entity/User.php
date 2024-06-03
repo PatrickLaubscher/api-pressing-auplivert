@@ -9,13 +9,18 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
+#[ORM\InheritanceType('JOINED')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['employee' => Employee::class, 'customer' => Customer::class, 'admin' => Admin::class])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    private ?string $discr = null;
 
     #[ORM\Column(length: 180)]
     private ?string $email = null;
@@ -167,4 +172,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function getDiscr(): ?string
+    {
+        return $this->discr;
+    }
+
+    public function setDiscr(?string $discr): void
+    {
+        $this->discr = $discr;
+    }
+
 }
