@@ -6,8 +6,10 @@ use App\Repository\CityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity(repositoryClass: CityRepository::class)]
+#[ApiResource]
 class City
 {
     #[ORM\Id]
@@ -74,28 +76,6 @@ class City
     public function getEmployees(): Collection
     {
         return $this->employees;
-    }
-
-    public function addEmployee(Employee $employee): static
-    {
-        if (!$this->employees->contains($employee)) {
-            $this->employees->add($employee);
-            $employee->setCity($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEmployee(Employee $employee): static
-    {
-        if ($this->employees->removeElement($employee)) {
-            // set the owning side to null (unless already changed)
-            if ($employee->getCity() === $this) {
-                $employee->setCity(null);
-            }
-        }
-
-        return $this;
     }
 
     /**
