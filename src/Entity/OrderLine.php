@@ -22,10 +22,6 @@ class OrderLine
 
     #[ORM\ManyToOne(inversedBy: 'orderLines')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?RawMaterial $raw_material = null;
-
-    #[ORM\ManyToOne(inversedBy: 'orderLines')]
-    #[ORM\JoinColumn(nullable: false)]
     private ?Prestation $prestation = null;
 
     #[ORM\ManyToOne(inversedBy: 'orderLines')]
@@ -58,18 +54,6 @@ class OrderLine
     public function setProduct(?Product $product): static
     {
         $this->product = $product;
-
-        return $this;
-    }
-
-    public function getRawMaterial(): ?RawMaterial
-    {
-        return $this->raw_material;
-    }
-
-    public function setRawMaterial(?RawMaterial $raw_material): static
-    {
-        $this->raw_material = $raw_material;
 
         return $this;
     }
